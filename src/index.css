@@ -1,0 +1,13 @@
+@import "tailwindcss";
+@plugin "daisyui";
+
+/* aside::after{
+    content: "";
+    position: absolute;
+    height: 100%;
+    background-color: #ddd;
+    width: 3px;
+    top: 0;
+    left: 100%;
+} */
+
