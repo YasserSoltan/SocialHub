@@ -1,15 +1,15 @@
 import { useParams } from "react-router";
 import Modal from "../../components/shared/ui/Modal";
 import { useEffect, useState } from "react";
-import axios from "axios";
+import api from "../../api/axios";
 
 export default function PostDetails() {
   const { postId } = useParams();
   const [post, setPost] = useState({});
   useEffect(() => {
     const getPost = async () => {
-      const { data } = await axios.get(
-        `http://localhost:3000/posts/${postId}?_expand=user&_embed=comments`
+      const { data } = await api.get(
+        `/posts/${postId}?_expand=user&_embed=comments`
       );
       console.log(data);
       setPost(data);

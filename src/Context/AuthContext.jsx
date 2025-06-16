@@ -1,5 +1,5 @@
-import axios from "axios";
 import { createContext, useEffect, useState } from "react";
+import api from "../api/axios";
 
 export const AuthContext = createContext(null);
 
@@ -16,8 +16,8 @@ const AuthContextProvider = ({ children }) => {
         try {
           const payload = JSON.parse(atob(userToken.split(".")[1]));
           const userId = payload.sub;
-          const response = await axios.get(
-            `http://localhost:3000/users/${userId}`,
+          const response = await api.get(
+            `/users/${userId}`,
             {
               headers: { Authorization: `Bearer ${userToken}` },
             }
