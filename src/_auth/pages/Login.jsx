@@ -21,6 +21,7 @@ export default function Login() {
   // Handle Login
   const handleLogin = async (values, { setSubmitting, setStatus }) => {
     try {
+      console.log("Try Login");
       setStatus(null);
       const response = await api.post(`/login`, {
         email: values.email,
@@ -28,10 +29,12 @@ export default function Login() {
       });
       const { accessToken, user } = response.data;
       localStorage.setItem("userToken", accessToken);
+      console.log(accessToken, user);
       setUserToken(accessToken);
       setUserData(user);
       navigate("/");
     } catch (err) {
+      console.log("can't login");
       console.error("Login error:", err);
       console.error("Response data:", err.response?.data);
       console.error("Response status:", err.response?.status);
