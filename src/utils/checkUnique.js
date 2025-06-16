@@ -1,9 +1,7 @@
-import axios from "axios";
+import api from "../api/axios";
 
 const checkUnique = async (property, value) => {
-  const { data } = await axios.get(
-    `http://localhost:3000/users?${property}=${value}`
-  );
+  const { data } = await api.get(`/users?${property}=${value}`);
   return data.length === 0;
 };
 
