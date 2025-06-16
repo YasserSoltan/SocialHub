@@ -39,7 +39,7 @@ export default function Home() {
           headers: { Authorization: `Bearer ${userToken}` },
         }
       );
-      setPostsWithUsers(response.data);
+      setPostsWithUsers(response.data.reverse());
     };
     const getUserLikes = async () => {
       const { data } = await api.get(
