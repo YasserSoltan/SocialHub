@@ -34,7 +34,7 @@ export default function Home() {
     }
     const getPostsAndUsers = async () => {
       const response = await api.get(
-        `https://spotty-polar-niece.glitch.me/posts?_expand=user`,
+        `/posts?_expand=user`,
         {
           headers: { Authorization: `Bearer ${userToken}` },
         }
