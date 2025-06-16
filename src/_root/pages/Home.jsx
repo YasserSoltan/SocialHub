@@ -280,7 +280,7 @@ export default function Home() {
   }
 
   return (
-    <div className="text-center w-[60%] mx-auto">
+    <div className="text-center sm:w-[60%] mx-auto">
       {create === "new" && (
         <>
           <Modal
