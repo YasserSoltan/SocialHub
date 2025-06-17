@@ -2,7 +2,6 @@ import { Outlet } from "react-router";
 import Sidebar from "../components/shared/Sidebar";
 import RightSidebar from "../components/shared/RightSidebar";
 import ScrollToTopButton from "../components/shared/ui/ScrollToTopButton";
-import { toast } from "react-hot-toast";
 import { useContext } from "react";
 import { AuthContext } from "../Context/AuthContext";
 
@@ -13,7 +12,6 @@ export default function RootLayout() {
     setUserData(null);
     setUserToken(null);
     localStorage.removeItem("userToken");
-    toast.success("Logged out successfully");
   };
 
   return (
