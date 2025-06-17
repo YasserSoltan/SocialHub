@@ -25,7 +25,7 @@ const registerValidationSchema = Yup.object({
   username: Yup.string()
     .required("Username is required")
     .min(5, "Username must be minimum 5 characters")
-    .max(15, "Username must be maximum 5 characters")
+    .max(15, "Username must be maximum 15 characters")
     .matches(
       /^[a-zA-Z0-9_]+$/,
       "Username can only contain letters, numbers, and underscores"
