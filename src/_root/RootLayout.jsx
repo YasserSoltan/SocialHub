@@ -2,17 +2,17 @@ import { Outlet } from "react-router";
 import Sidebar from "../components/shared/Sidebar";
 import RightSidebar from "../components/shared/RightSidebar";
 import ScrollToTopButton from "../components/shared/ui/ScrollToTopButton";
-import { useAuth } from "../../context/AuthContext";
-import { useNavigate } from "react-router-dom";
 import { toast } from "react-hot-toast";
+import { useContext } from "react";
+import { AuthContext } from "../Context/AuthContext";
 
 export default function RootLayout() {
-  const { logout } = useAuth();
-  const navigate = useNavigate();
+  const {setUserToken, setUserData} = useContext(AuthContext)
 
   const handleLogout = () => {
-    logout();
-    navigate("/login");
+    setUserData(null);
+    setUserToken(null);
+    localStorage.removeItem("userToken");
     toast.success("Logged out successfully");
   };
 
