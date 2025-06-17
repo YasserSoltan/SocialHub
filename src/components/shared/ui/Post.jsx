@@ -2,7 +2,7 @@ import { useContext, useRef, useState } from "react";
 import { AuthContext } from "../../../Context/AuthContext";
 import { toast } from "react-toastify";
 import getTimeDifference from "../../../utils/getTimeDifference";
-import { useNavigate } from "react-router";
+import { Link, useNavigate } from "react-router";
 import api from "../../../api/axios";
 
 export default function Post({
@@ -132,7 +132,7 @@ export default function Post({
               <img src={avatar} alt="Profile img" />
             </div>
           </div>
-          <h3 className="inline-block mx-1 font-medium">{username}</h3>
+          <Link to={`/profile/${user.id}`}><h3 className="inline-block mx-1 font-medium">{username}</h3></Link>
           <p className="text-gray-500">• {getTimeDifference(createdAt)}</p>
         </div>
         {userId === user.id && (
