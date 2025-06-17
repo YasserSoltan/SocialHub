@@ -1,4 +1,4 @@
-import { useContext, useRef, useState, useCallback } from "react";
+import { useContext, useRef, useState } from "react";
 import { AuthContext } from "../../../Context/AuthContext";
 import { toast } from "react-toastify";
 import getTimeDifference from "../../../utils/getTimeDifference";
@@ -25,63 +25,52 @@ export default function Post({
   const [likesUsers, setLikesUsers] = useState([]);
   const [commentsUsers, setCommentsUsers] = useState([]);
   const [isLikeLoading, setIsLikeLoading] = useState(false);
-  const [localLikesCount, setLocalLikesCount] = useState(likesCount);
-  const [localIsLiked, setLocalIsLiked] = useState(isLiked);
   const maxLength = 100;
   const needsTruncation = caption.length > maxLength;
 
   const { userData } = useContext(AuthContext);
   const userId = userData.id;
 
-  const handleLike = useCallback(async () => {
+  const handleLike = async () => {
     if (isLikeLoading) return;
-    
     try {
       setIsLikeLoading(true);
-      
-      setLocalIsLiked(!localIsLiked);
-      setLocalLikesCount(prev => localIsLiked ? Math.max(prev - 1, 0) : prev + 1);
-      
-      if (!localIsLiked) {
+      if (!isLiked) {
         const [likeResponse] = await Promise.all([
           api.post("/likes", { userId, postId: id }),
           api.patch(`/posts/${id}`, {
-            likesCount: localLikesCount + 1,
-          })
+            likesCount: likesCount + 1,
+          }),
         ]);
-        
         if (likeResponse.status === 201) {
           handleIncreaseLikes(id);
         } else {
-          throw new Error('Failed to like post');
+          toast.error("Something went wrong");
         }
       } else {
-        const { data: likes } = await api.get(`/likes?userId=${userId}&postId=${id}`);
+        const { data: likes } = await api.get(
+          `/likes?userId=${userId}&postId=${id}`
+        );
         if (!likes.length) return;
-        
         const [unlikeResponse] = await Promise.all([
           api.delete(`/likes/${likes[0].id}`),
           api.patch(`/posts/${id}`, {
-            likesCount: Math.max(localLikesCount - 1, 0),
-          })
+            likesCount: Math.max(likesCount - 1, 0),
+          }),
         ]);
-        
-        if (unlikeResponse.status === 200) {
+        if (unlikeResponse.status === 200){
           handleDecreaseLikes(id);
         } else {
-          throw new Error('Failed to unlike post');
+          toast.error("Something went wrong");
         }
       }
     } catch (err) {
-      setLocalIsLiked(localIsLiked);
-      setLocalLikesCount(likesCount);
-      console.error("Like error:", err);
-      toast.error("Failed to update like status");
+      console.log(err);
+      toast.error("Something went wrong");
     } finally {
       setIsLikeLoading(false);
     }
-  }, [id, userId, localIsLiked, localLikesCount, isLikeLoading, handleIncreaseLikes, handleDecreaseLikes]);
-
+  };
   const handleAddComment = async () => {
     try {
       if (comment.trim() === "") {
@@ -181,15 +170,15 @@ export default function Post({
       {/* </div> */}
       <img src={imageUrl} alt="" className="rounded-md " />
       <div className="flex gap-2">
-        <button disabled={isLikeLoading}>
+        <button disabled={isEditLike}>
           <svg
             xmlns="http://www.w3.org/2000/svg"
-            fill={localIsLiked ? "red" : "none"}
+            fill={isLiked ? "red" : "none"}
             viewBox="0 0 24 24"
             strokeWidth={1.5}
             stroke="currentColor"
-            className={`size-6 ${isLikeLoading ? 'opacity-50' : 'cursor-pointer'}`}
-            onClick={handleLike}
+            className="size-6 cursor-pointer"
+            onClick={() => handleLike()}
           >
             <path
               strokeLinecap="round"
@@ -229,7 +218,7 @@ export default function Post({
       </div>
       <div className="text-start font-bold text-md ">
         <button className="cursor-pointer" onClick={() => handleLikesModal()}>
-          {localLikesCount} likes
+          {likesCount} likes
         </button>
         <dialog ref={likesModal} className="modal">
           <div className="modal-box">
