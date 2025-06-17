@@ -220,7 +220,7 @@ export default function Post({
           {likesCount} likes
         </button>
         <dialog ref={likesModal} className="modal">
-          <div className="modal-box">
+          <div className="modal-box overflow-scroll">
             <h3 className="font-bold text-md text-center border-b-2 border-b-gray-300 pb-4">
               Likes
             </h3>
