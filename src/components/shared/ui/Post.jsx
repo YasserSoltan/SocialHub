@@ -1,4 +1,4 @@
-import { useContext, useRef, useState } from "react";
+import { useContext, useRef, useState, useCallback } from "react";
 import { AuthContext } from "../../../Context/AuthContext";
 import { toast } from "react-toastify";
 import getTimeDifference from "../../../utils/getTimeDifference";
@@ -24,38 +24,64 @@ export default function Post({
   const [IsCommentError, setIsCommentError] = useState(false);
   const [likesUsers, setLikesUsers] = useState([]);
   const [commentsUsers, setCommentsUsers] = useState([]);
-  const [isEditLike, setIsEditLike] = useState(false);
+  const [isLikeLoading, setIsLikeLoading] = useState(false);
+  const [localLikesCount, setLocalLikesCount] = useState(likesCount);
+  const [localIsLiked, setLocalIsLiked] = useState(isLiked);
   const maxLength = 100;
   const needsTruncation = caption.length > maxLength;
 
   const { userData } = useContext(AuthContext);
   const userId = userData.id;
 
-  const handleLike = async () => {
+  const handleLike = useCallback(async () => {
+    if (isLikeLoading) return;
+    
     try {
-      setIsEditLike(false);
-      if (!isLiked) {
-        await api.post("/likes", { userId, postId: id });
-        await api.patch(`/posts/${id}`, {
-          likesCount: likesCount + 1,
-        });
-        handleIncreaseLikes(id);
+      setIsLikeLoading(true);
+      
+      setLocalIsLiked(!localIsLiked);
+      setLocalLikesCount(prev => localIsLiked ? Math.max(prev - 1, 0) : prev + 1);
+      
+      if (!localIsLiked) {
+        const [likeResponse] = await Promise.all([
+          api.post("/likes", { userId, postId: id }),
+          api.patch(`/posts/${id}`, {
+            likesCount: localLikesCount + 1,
+          })
+        ]);
+        
+        if (likeResponse.status === 201) {
+          handleIncreaseLikes(id);
+        } else {
+          throw new Error('Failed to like post');
+        }
       } else {
-        const { data: likes } = await api.get(
-          `/likes?userId=${userId}&postId=${id}`
-        );
+        const { data: likes } = await api.get(`/likes?userId=${userId}&postId=${id}`);
         if (!likes.length) return;
-        await api.delete(`/likes/${likes[0].id}`);
-        await api.patch(`/posts/${id}`, {
-          likesCount: Math.max(likesCount - 1, 0),
-        });
-        handleDecreaseLikes(id);
+        
+        const [unlikeResponse] = await Promise.all([
+          api.delete(`/likes/${likes[0].id}`),
+          api.patch(`/posts/${id}`, {
+            likesCount: Math.max(localLikesCount - 1, 0),
+          })
+        ]);
+        
+        if (unlikeResponse.status === 200) {
+          handleDecreaseLikes(id);
+        } else {
+          throw new Error('Failed to unlike post');
+        }
       }
     } catch (err) {
-      console.log(err);
-      toast.error("Something went wrong");
+      setLocalIsLiked(localIsLiked);
+      setLocalLikesCount(likesCount);
+      console.error("Like error:", err);
+      toast.error("Failed to update like status");
+    } finally {
+      setIsLikeLoading(false);
     }
-  };
+  }, [id, userId, localIsLiked, localLikesCount, isLikeLoading, handleIncreaseLikes, handleDecreaseLikes]);
+
   const handleAddComment = async () => {
     try {
       if (comment.trim() === "") {
@@ -155,15 +181,15 @@ export default function Post({
       {/* </div> */}
       <img src={imageUrl} alt="" className="rounded-md " />
       <div className="flex gap-2">
-        <button disabled={isEditLike}>
+        <button disabled={isLikeLoading}>
           <svg
             xmlns="http://www.w3.org/2000/svg"
-            fill={isLiked ? "red" : "none"}
+            fill={localIsLiked ? "red" : "none"}
             viewBox="0 0 24 24"
             strokeWidth={1.5}
             stroke="currentColor"
-            className="size-6 cursor-pointer"
-            onClick={() => handleLike()}
+            className={`size-6 ${isLikeLoading ? 'opacity-50' : 'cursor-pointer'}`}
+            onClick={handleLike}
           >
             <path
               strokeLinecap="round"
@@ -203,7 +229,7 @@ export default function Post({
       </div>
       <div className="text-start font-bold text-md ">
         <button className="cursor-pointer" onClick={() => handleLikesModal()}>
-          {likesCount} likes
+          {localLikesCount} likes
         </button>
         <dialog ref={likesModal} className="modal">
           <div className="modal-box">
