@@ -1,8 +1,21 @@
 import { Outlet } from "react-router";
 import Sidebar from "../components/shared/Sidebar";
 import RightSidebar from "../components/shared/RightSidebar";
+import ScrollToTopButton from "../components/shared/ui/ScrollToTopButton";
+import { useAuth } from "../../context/AuthContext";
+import { useNavigate } from "react-router-dom";
+import { toast } from "react-hot-toast";
 
 export default function RootLayout() {
+  const { logout } = useAuth();
+  const navigate = useNavigate();
+
+  const handleLogout = () => {
+    logout();
+    navigate("/login");
+    toast.success("Logged out successfully");
+  };
+
   return (
     <div className="min-h-screen">
       {/* Mobile Navigation Bar - Only visible on small screens */}
@@ -23,26 +36,34 @@ export default function RootLayout() {
               <path strokeLinecap="round" strokeLinejoin="round" d="M15.75 6a3.75 3.75 0 1 1-7.5 0 3.75 3.75 0 0 1 7.5 0ZM4.501 20.118a7.5 7.5 0 0 1 14.998 0A17.933 17.933 0 0 1 12 21.75c-2.676 0-5.216-.584-7.499-1.632Z" />
             </svg>
           </a>
+          <button onClick={handleLogout} className="text-gray-600 hover:text-blue-900">
+            <svg xmlns="http://www.w3.org/2000/svg" fill="none" viewBox="0 0 24 24" strokeWidth={1.5} stroke="currentColor" className="w-6 h-6">
+              <path strokeLinecap="round" strokeLinejoin="round" d="M15.75 9V5.25A2.25 2.25 0 0 0 13.5 3h-6a2.25 2.25 0 0 0-2.25 2.25v13.5A2.25 2.25 0 0 0 7.5 21h6a2.25 2.25 0 0 0 2.25-2.25V15M12 9l-3 3m0 0 3 3m-3-3h12.75" />
+            </svg>
+          </button>
         </div>
       </div>
 
       {/* Main Layout Grid */}
-      <div className="grid grid-cols-1 md:grid-cols-5 gap-5 pb-16 md:pb-0">
+      <div className="grid grid-cols-1 md:grid-cols-12 gap-4">
         {/* Sidebar - Hidden on mobile, visible on md and up */}
-        <div className="hidden md:block md:col-span-1 bg-blue-950 text-white">
+        <div className="hidden md:block md:col-span-3 lg:col-span-2">
           <Sidebar />
         </div>
 
-        {/* Main Content - Full width on mobile, 3 columns on md and up */}
-        <div className="col-span-1 md:col-span-3 text-center px-4 md:px-0">
+        {/* Main Content */}
+        <main className="col-span-1 md:col-span-6 lg:col-span-8">
           <Outlet />
-        </div>
+        </main>
 
         {/* Right Sidebar - Hidden on mobile, visible on md and up */}
-        <div className="hidden md:block md:col-span-1">
+        <div className="hidden md:block md:col-span-3 lg:col-span-2">
           <RightSidebar />
         </div>
       </div>
+
+      {/* Scroll to Top Button */}
+      <ScrollToTopButton />
     </div>
   );
 }
