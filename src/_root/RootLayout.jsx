@@ -43,19 +43,19 @@ export default function RootLayout() {
       </div>
 
       {/* Main Layout Grid */}
-      <div className="grid grid-cols-1 md:grid-cols-12 gap-4">
+      <div className="grid grid-cols-1 md:grid-cols-5 gap-5 pb-16 md:pb-0">
         {/* Sidebar - Hidden on mobile, visible on md and up */}
-        <div className="hidden md:block md:col-span-3 lg:col-span-2">
+        <div className="hidden md:block md:col-span-1 bg-blue-950 text-white">
           <Sidebar />
         </div>
 
         {/* Main Content */}
-        <main className="col-span-1 md:col-span-6 lg:col-span-8">
+        <main className="col-span-1 md:col-span-3 text-center px-4 md:px-0">
           <Outlet />
         </main>
 
         {/* Right Sidebar - Hidden on mobile, visible on md and up */}
-        <div className="hidden md:block md:col-span-3 lg:col-span-2">
+        <div className="hidden md:block md:col-span-1">
           <RightSidebar />
         </div>
       </div>
