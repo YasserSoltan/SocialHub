@@ -170,7 +170,7 @@ export default function Post({
       {/* </div> */}
       <img src={imageUrl} alt="" className="rounded-md " />
       <div className="flex gap-2">
-        <button disabled={isEditLike}>
+        <button disabled={isLikeLoading} onClick={() => handleLike()}>
           <svg
             xmlns="http://www.w3.org/2000/svg"
             fill={isLiked ? "red" : "none"}
@@ -178,7 +178,6 @@ export default function Post({
             strokeWidth={1.5}
             stroke="currentColor"
             className="size-6 cursor-pointer"
-            onClick={() => handleLike()}
           >
             <path
               strokeLinecap="round"
