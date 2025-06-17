@@ -24,6 +24,7 @@ export default function Post({
   const [IsCommentError, setIsCommentError] = useState(false);
   const [likesUsers, setLikesUsers] = useState([]);
   const [commentsUsers, setCommentsUsers] = useState([]);
+  const [isEditLike, setIsEditLike] = useState(false);
   const maxLength = 100;
   const needsTruncation = caption.length > maxLength;
 
@@ -31,22 +32,28 @@ export default function Post({
   const userId = userData.id;
 
   const handleLike = async () => {
-    if (!isLiked) {
-      api.post("/likes", { userId, postId: id });
-      api.patch(`/posts/${id}`, {
-        likesCount: likesCount + 1,
-      });
-      handleIncreaseLikes(id);
-    } else {
-      const { data: likes } = await api.get(
-        `/likes?userId=${userId}&postId=${id}`
-      );
-      if (!likes.length) return;
-      api.delete(`/likes/${likes[0].id}`);
-      api.patch(`/posts/${id}`, {
-        likesCount: Math.max(likesCount - 1, 0),
-      });
-      handleDecreaseLikes(id);
+    try {
+      setIsEditLike(false);
+      if (!isLiked) {
+        await api.post("/likes", { userId, postId: id });
+        await api.patch(`/posts/${id}`, {
+          likesCount: likesCount + 1,
+        });
+        handleIncreaseLikes(id);
+      } else {
+        const { data: likes } = await api.get(
+          `/likes?userId=${userId}&postId=${id}`
+        );
+        if (!likes.length) return;
+        await api.delete(`/likes/${likes[0].id}`);
+        await api.patch(`/posts/${id}`, {
+          likesCount: Math.max(likesCount - 1, 0),
+        });
+        handleDecreaseLikes(id);
+      }
+    } catch (err) {
+      console.log(err);
+      toast.error("Something went wrong");
     }
   };
   const handleAddComment = async () => {
@@ -76,9 +83,7 @@ export default function Post({
 
   const handleLikesModal = async () => {
     likesModal.current.showModal();
-    const { data: likes } = await api.get(
-      `/likes?postId=${id}`
-    );
+    const { data: likes } = await api.get(`/likes?postId=${id}`);
     const { data: allUsers } = await api.get(`/users`);
     const usersIds = likes.map((like) => like.userId);
     const users = allUsers.filter((user) => usersIds.includes(user.id));
@@ -87,9 +92,7 @@ export default function Post({
 
   const handleCommentsModal = async () => {
     commentsModal.current.showModal();
-    const { data: comments } = await api.get(
-      `/comments?postId=${id}`
-    );
+    const { data: comments } = await api.get(`/comments?postId=${id}`);
     const { data: allUsers } = await api.get(`/users`);
     const usersIds = comments.map((comment) => comment.userId);
     const users = allUsers.filter((user) => usersIds.includes(user.id));
@@ -102,7 +105,7 @@ export default function Post({
 
   const handleEditPost = (postId) => {
     navigate(`/?create=edit&postId=${postId}`);
-  }
+  };
 
   return (
     <article className="flex flex-col gap-2 my-6">
@@ -152,21 +155,23 @@ export default function Post({
       {/* </div> */}
       <img src={imageUrl} alt="" className="rounded-md " />
       <div className="flex gap-2">
-        <svg
-          xmlns="http://www.w3.org/2000/svg"
-          fill={isLiked ? "red" : "none"}
-          viewBox="0 0 24 24"
-          strokeWidth={1.5}
-          stroke="currentColor"
-          className="size-6 cursor-pointer"
-          onClick={() => handleLike()}
-        >
-          <path
-            strokeLinecap="round"
-            strokeLinejoin="round"
-            d="M21 8.25c0-2.485-2.099-4.5-4.688-4.5-1.935 0-3.597 1.126-4.312 2.733-.715-1.607-2.377-2.733-4.313-2.733C5.1 3.75 3 5.765 3 8.25c0 7.22 9 12 9 12s9-4.78 9-12Z"
-          />
-        </svg>
+        <button disabled={isEditLike}>
+          <svg
+            xmlns="http://www.w3.org/2000/svg"
+            fill={isLiked ? "red" : "none"}
+            viewBox="0 0 24 24"
+            strokeWidth={1.5}
+            stroke="currentColor"
+            className="size-6 cursor-pointer"
+            onClick={() => handleLike()}
+          >
+            <path
+              strokeLinecap="round"
+              strokeLinejoin="round"
+              d="M21 8.25c0-2.485-2.099-4.5-4.688-4.5-1.935 0-3.597 1.126-4.312 2.733-.715-1.607-2.377-2.733-4.313-2.733C5.1 3.75 3 5.765 3 8.25c0 7.22 9 12 9 12s9-4.78 9-12Z"
+            />
+          </svg>
+        </button>
         <svg
           xmlns="http://www.w3.org/2000/svg"
           fill="none"
