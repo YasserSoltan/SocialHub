@@ -58,7 +58,7 @@ export default function Post({
             likesCount: Math.max(likesCount - 1, 0),
           }),
         ]);
-        if (unlikeResponse.status === 200){
+        if (unlikeResponse.status === 200) {
           handleDecreaseLikes(id);
         } else {
           toast.error("Something went wrong");
@@ -127,12 +127,16 @@ export default function Post({
       {/* <div className="flex"> */}
       <div className="flex items-center justify-between">
         <div className="flex items-start">
-          <div className="avatar">
-            <div className="w-11 rounded-full">
-              <img src={avatar} alt="Profile img" />
+          <Link to={`/profile/${user.id}`}>
+            <div className="avatar">
+              <div className="w-11 rounded-full">
+                <img src={avatar} alt="Profile img" />
+              </div>
             </div>
-          </div>
-          <Link to={`/profile/${user.id}`}><h3 className="inline-block mx-1 font-medium">{username}</h3></Link>
+          </Link>
+          <Link to={`/profile/${user.id}`}>
+            <h3 className="inline-block mx-1 font-medium">{username}</h3>
+          </Link>
           <p className="text-gray-500">• {getTimeDifference(createdAt)}</p>
         </div>
         {userId === user.id && (
