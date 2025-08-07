@@ -1,9 +1,9 @@
 import { useContext, useRef, useState } from "react";
-import { AuthContext } from "../../../Context/AuthContext";
+import { AuthContext } from "../../Context/AuthContext";
 import { toast } from "react-toastify";
-import getTimeDifference from "../../../utils/getTimeDifference";
+import getTimeDifference from "../../utils/getTimeDifference";
 import { Link, useNavigate } from "react-router";
-import api from "../../../api/axios";
+import api from "../../api/axios";
 
 export default function Post({
   post,

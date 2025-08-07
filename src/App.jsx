@@ -9,6 +9,9 @@ import ProtectedRoute from "./components/shared/ProtectedRoutes";
 import AuthContextProvider from "./Context/AuthContext";
 import { ToastContainer } from "react-toastify";
 import PostDetails from "./_root/pages/PostDetails";
+import { QueryClient, QueryClientProvider } from "@tanstack/react-query";
+
+const queryClient = new QueryClient();
 
 const router = createBrowserRouter([
   {
@@ -53,10 +56,12 @@ const router = createBrowserRouter([
 function App() {
   return (
     <>
-      <AuthContextProvider>
-        <RouterProvider router={router} />
-        <ToastContainer />
-      </AuthContextProvider>
+      <QueryClientProvider client={queryClient}>
+        <AuthContextProvider>
+          <RouterProvider router={router} />
+          <ToastContainer />
+        </AuthContextProvider>
+      </QueryClientProvider>
     </>
   );
 }

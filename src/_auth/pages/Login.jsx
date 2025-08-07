@@ -3,7 +3,7 @@ import { useContext, useEffect } from "react";
 import { Formik, Form, Field, ErrorMessage } from "formik";
 import { AuthContext } from "../../Context/AuthContext";
 import { loginValidationSchema } from "../../utils/validations";
-import Button from "../../components/shared/ui/Button";
+import Button from "../../components/ui/Button";
 import api from "../../api/axios";
 
 export default function Login() {

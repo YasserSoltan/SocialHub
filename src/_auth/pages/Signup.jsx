@@ -1,7 +1,7 @@
 import { useContext, useEffect } from "react";
 import { AuthContext } from "../../Context/AuthContext";
 import { useNavigate } from "react-router";
-import Button from "../../components/shared/ui/Button";
+import Button from "../../components/ui/Button";
 import { ErrorMessage, Field, Form, Formik } from "formik";
 import { registerValidationSchema } from "../../utils/validations";
 import defaultAvatar from "../../assets/default-avatar.png";

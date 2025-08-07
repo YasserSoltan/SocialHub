@@ -1,36 +1,15 @@
-import { useEffect, useState } from "react";
 import { useParams } from "react-router";
-import api from "../../api/axios";
+import { useUser } from "../../hooks/useUsers";
+import Loader from "../../components/ui/Loader";
 
 export default function Profile() {
   const { userId } = useParams();
-  const [user, setUser] = useState({});
-  const [error, setError] = useState(false);
-  const [loading, setLoading] = useState(false);
-  useEffect(() => {
-    setLoading(true);
-    const getUser = async () => {
-      try {
-        const response = await api.get(`/users/${userId}?_embed=posts`);
-        if (response.status === 200) {
-          setUser(response.data);
-        }
-      } catch (err) {
-        setError(true);
-        console.log(err);
-      } finally {
-        setLoading(false);
-      }
-    };
-    getUser();
-  }, [userId]);
-  if (loading) {
-    return <div>Loading...</div>;
-  }
-  if (error) {
-    return <div>Something went wrong</div>;
-  }
-  if (!user) {
+  const { data: user, isLoading, error } = useUser(userId);
+  if (isLoading)
+    return <Loader />;
+  if (error && error.status !== 404)
+    return <div>Error: {error.message} Please Try again</div>;
+  if (!user || error?.status === 404) {
     return <div>User not found</div>;
   }
   return (
@@ -43,7 +22,6 @@ export default function Profile() {
         </div>
         <div>
           <h3 className="inline-block mx-1 font-medium">{user.username}</h3>
-          <h3 className="inline-block mx-1 font-medium">{user.}</h3>
         </div>
       </section>
     </section>

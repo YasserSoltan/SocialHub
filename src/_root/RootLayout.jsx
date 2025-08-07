@@ -1,7 +1,7 @@
 import { Outlet } from "react-router";
 import Sidebar from "../components/shared/Sidebar";
 import RightSidebar from "../components/shared/RightSidebar";
-import ScrollToTopButton from "../components/shared/ui/ScrollToTopButton";
+import ScrollToTopButton from "../components/ui/ScrollToTopButton";
 import { useContext } from "react";
 import { AuthContext } from "../Context/AuthContext";
 

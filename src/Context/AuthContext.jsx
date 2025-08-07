@@ -14,7 +14,6 @@ const AuthContextProvider = ({ children }) => {
     const fetchUserData = async () => {
       if (userToken) {
         try {
-          console.log("context")
           const payload = JSON.parse(atob(userToken.split(".")[1]));
           const userId = payload.sub;
           const response = await api.get(
@@ -23,7 +22,6 @@ const AuthContextProvider = ({ children }) => {
               headers: { Authorization: `Bearer ${userToken}` },
             }
           );
-          console.log(response)
           setUserData(response.data);
           setError(null);
         } catch (err) {

@@ -1,13 +1,16 @@
-import Post from "../../components/shared/ui/Post";
 import { useContext, useEffect, useRef, useState } from "react";
 import { AuthContext } from "../../Context/AuthContext";
 import { useNavigate, useSearchParams } from "react-router";
 import { uploadToCloudinary } from "../../utils/cloudinary";
-import Modal from "../../components/shared/ui/Modal";
-import Button from "../../components/shared/ui/Button";
+import Modal from "../../components/ui/Modal";
+import Button from "../../components/ui/Button";
+import Post from "../../components/ui/Post";
 import Swal from "sweetalert2";
 import { toast } from "react-toastify";
 import api from "../../api/axios";
+import { usePosts } from "../../hooks/usePosts";
+import { useUser, useUsers } from "../../hooks/useUsers";
+import Loader from "../../components/ui/Loader";
 
 export default function Home() {
   const createModal = useRef();
@@ -19,7 +22,6 @@ export default function Home() {
 
   const [postsWithUsers, setPostsWithUsers] = useState([]);
   const [userLikes, setUserLikes] = useState([]);
-  const [isLoading, setIsLoading] = useState(true);
 
   const [caption, setCaption] = useState("");
   const [image, setImage] = useState(null);
@@ -27,6 +29,11 @@ export default function Home() {
   const [loadingPost, setLoadingPost] = useState(false);
 
   const navigate = useNavigate();
+
+  const { data: posts, isLoading: isPostsLoading, error: postsError } = usePosts();
+  const { data: users, isLoading: isUsersLoading, error: usersError } = useUsers();
+  const { data: user, isLoading: isUserLoading, error: userError } = useUser(userId);
+  const isLoading = isPostsLoading || isUsersLoading || isUserLoading;
 
   useEffect(() => {
     if (!userToken) {
@@ -67,13 +74,11 @@ export default function Home() {
       }
       if (create === "new" || create === "edit")
         createModal.current?.showModal();
-      setIsLoading(true);
       getPostsAndUsers();
       getUserLikes();
     } catch (err) {
       console.log(err);
     }
-    setIsLoading(false);
   }, [userId, userToken, create, navigate, postId]);
 
   const handleIncreaseComments = (postId) => {
@@ -241,7 +246,7 @@ export default function Home() {
 
   // Loading state
   if (isLoading || postsWithUsers === null) {
-    return <div className="text-center">Loading...</div>;
+    return <Loader />;
   }
 
   // Empty state
